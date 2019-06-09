@@ -1,0 +1,82 @@
+version: '3.3'
+
+services:
+  master:
+    image: redis:3
+    networks:
+      iio:
+        aliases:
+          - master
+
+  slave:
+    image: redis:3
+    command: redis-server --slaveof redis-master 6379
+    links:
+      - master:redis-master
+    networks:
+      iio:
+        aliases:
+          - slave
+
+  sentinel:
+    image: ignitial/sentinel
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+    links:
+      - master:redis-master
+      - slave
+    networks:
+      iio:
+        aliases:
+          - sentinel
+
+  mongo:
+    image: mongo:3.6
+    container_name: mongo
+    volumes:
+      - /home/${USER}/iio-data/mongo:/data/db
+    ports:
+      - "40000:27017"
+    networks:
+      iio:
+        aliases:
+          - mongo
+
+  dlake:
+    image: registry.ignitial.io/ignitial/dlake
+    container_name: dlake
+    volumes:
+      - ${PWD}:/opt/dlake
+    ports:
+      - "20991:20991"
+    environment:
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_SENTINELS=sentinel
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DBNAME=ignitialio
+      - IIOS_NAMESPACE=ignitialio
+      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_PORT=20991
+    networks:
+      iio:
+        aliases:
+          - dlake
+
+  dlake-test:
+    image: ignitial/dlake-test
+    container_name: dlake-test
+    volumes:
+      - ${PWD}:/opt/dlake
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DBNAME=ignitialio
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_SENTINELS=sentinel
+    networks:
+      iio:
+        aliases:
+          - dlake-test
+
+networks:
+  iio:

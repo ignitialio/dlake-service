@@ -1,0 +1,54 @@
+version: '3.3'
+
+services:
+  redis:
+    image: redis:5.0.5-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      iio:
+        aliases:
+          - redis
+
+  mongo:
+    image: mongo:4
+    container_name: mongo
+    volumes:
+      - /home/${USER}/iio-data/mongo:/data/db
+    ports:
+      - "40000:27017"
+    networks:
+      iio:
+        aliases:
+          - mongo
+
+  dlake:
+    image: registry.ignitial.io/ignitial/dlake:${APP_VERSION}
+    container_name: dlake
+    depends_on:
+      - redis
+    volumes:
+      - ${PWD}:/opt/dlake
+    ports:
+      - "20991:20991"
+    environment:
+      - DEBUG=${DEBUG}
+      - REDIS_HOST=redis
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DBNAME=ignitialio
+      - IIOS_NAMESPACE=ignitialio
+      - IIOS_SERVER_HOST=0.0.0.0
+      - IIOS_SERVER_PORT=20991
+    networks:
+      iio:
+        aliases:
+          - dlake
+
+volumes:
+  redis-data:
+
+networks:
+  iio:

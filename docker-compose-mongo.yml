@@ -1,0 +1,79 @@
+version: '3.3'
+
+services:
+  redis:
+    image: redis:5.0.5-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      iio:
+        aliases:
+          - redis
+
+  mongo:
+    image: mongo:4
+    container_name: mongo
+    volumes:
+      - /home/${USER}/iio-data/mongo:/data/db
+    ports:
+      - "40000:27017"
+    networks:
+      iio:
+        aliases:
+          - mongo
+
+  dlake:
+    image: registry.ignitial.io/ignitial/dlake:${APP_VERSION}
+    container_name: dlake
+    depends_on:
+      - redis
+    volumes:
+      - ${PWD}:/opt/dlake
+    ports:
+      - "20991:20991"
+    environment:
+      - DEBUG=${DEBUG}
+      - REDIS_HOST=redis
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DBNAME=ignitialio
+      - IIOS_NAMESPACE=testings
+      - IIOS_SERVER_HOST=dlake
+      - IIOS_SERVER_PORT=20991
+      - PUBSUB_RPC=${PUBSUB_RPC}
+      - ENCODER=${ENCODER}
+      - STREAMING=${STREAMING}
+    networks:
+      iio:
+        aliases:
+          - dlake
+
+  alice:
+    image: ignitial/iios:latest
+    depends_on:
+      - redis
+    container_name: alice
+    volumes:
+      - ${PWD}:/opt/svc
+    environment:
+      - IIOS_SERVER_PORT=20991
+      - PUBSUB_RPC=${PUBSUB_RPC}
+      - ENCODER=${ENCODER}
+      - STREAMING=${STREAMING}
+      - IIOS_SERVER_HOST=alice
+      - IIOS_NAMESPACE=testings
+      - REDIS_HOST=redis
+      - DEBUG=${DEBUG}
+    command: ["node", "test/consumer/index.js"]
+    networks:
+      iio:
+        aliases:
+          - alice
+
+volumes:
+  redis-data:
+
+networks:
+  iio:
