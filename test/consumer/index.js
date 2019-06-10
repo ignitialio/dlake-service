@@ -108,20 +108,40 @@ if (!process.env.STREAMING) {
               await gateway.api['dlake:users'].d_delete({
                 'login.username': 'gcrood'
               }, { $userId: admin })
+
+              console.log(chalk.green('delete user with common API ✔'))
             } catch (err) {
-              console.log(err)
+              console.log(chalk.red('delete user with common API ✘'))
             }
 
             gateway.api['dlake:users'].d_create(doc, { $userId: admin }).then(result => {
               console.log(chalk.red('bad unique index for users ✘'))
             }).catch(err => {
               console.log(chalk.green('bad unique index for users ✔'))
-              
+
               doc.login.username = 'gcrood'
-              gateway.api['dlake:users'].d_create(doc, { $userId: admin }).then(result => {
-                console.log(chalk.green('create user ✔'))
+              gateway.api['dlake:users'].d_create(doc, { $userId: admin }).then(async result => {
+                console.log(chalk.green('create user with common API ✔'))
+
+                try {
+                  await gateway.api['dlake:users'].deleteOne({
+                    'login.username': 'tcrood'
+                  }, { $userId: admin })
+
+                  console.log(chalk.green('delete user ✔'))
+                } catch (err) {
+                  console.log(chalk.red('delete user ✘'))
+                }
+
+                doc.login.username = 'tcrood'
+                gateway.api['dlake:users'].insertOne(doc, { $userId: admin }).then(result => {
+                  console.log(chalk.green('create user ✔'))
+                }).catch(err => {
+                  console.log(chalk.red('create user ✘'))
+                  console.log(err)
+                })
               }).catch(err => {
-                console.log(chalk.red('create user ✘'))
+                console.log(chalk.red('create user with common API ✘'))
                 console.log(err)
               })
             })
@@ -134,7 +154,6 @@ if (!process.env.STREAMING) {
 
       gateway.api['dlake:users'].indexExists('login.username_1', { $userId: admin }).then(result => {
         console.log(chalk.green('get unique index for users ✔'))
-        console.log('index login.username_1 exists ?', result)
         if (!result) {
           gateway.api['dlake:users'].createIndex({
             'login.username': 1
