@@ -18,16 +18,6 @@ if (process.env.REDIS_SENTINELS) {
 // Authentication secrets
 const AUTH_SECRET = process.env.AUTH_SECRET || 'Once upon the time, for ever'
 
-// MONGO access secrets
-var MONGODB_PASSWORD = process.env.MONGODB_PASSWORD
-
-// get from docker secrets when swarm mode
-try {
-  MONGODB_PASSWORD = fs.readFileSync('/run/secrets/mongodb_pwd', 'utf8').replace('\n', '')
-} catch (err) {
-  console.log('config: no pwd secret defined')
-}
-
 // Main configuration structure
 // -----------------------------------------------------------------------------
 module.exports = {
@@ -58,7 +48,7 @@ module.exports = {
       options: process.env.MONGODB_OPTIONS,
       maxAttempts: process.env.MONGODB_CONN_MAX_ATTEMPTS || 30,
       user: process.env.MONGODB_USER,
-      password: MONGODB_PASSWORD
+      password: process.env.MONGODB_PASSWORD
     }/* ,
     couch: {
       uri: process.env.COUCHDB_URI || 'http://127.0.0.1:5984',
@@ -67,13 +57,22 @@ module.exports = {
       maxAttempts: process.env.COUCHDB_CONN_MAX_ATTEMPTS || 30
     } */
   },
-  /* collections */
-  data: [ 'activity', 'connection', 'meta', 'notification', 'user' ],
-  /* datum definition pathes */
-  datum: {
-    paths: [ './lib/datum', '/opt/dlake/datum' ],
-    configPath: './config'
+  /* access control: if present, acces control enabled */
+  accesscontrol: {
+    /* connector configuration: optional, default same as global connector, but
+       on DB 1 */
+    connector: {
+      /* redis server connection */
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: 6379,
+        db: 1,
+        ipFamily: 4
+      }
+    }
   },
+  /* collections: uses plural */
+  data: [ 'users' ],
   /* HTTP server declaration */
   server: {
     /* server host */

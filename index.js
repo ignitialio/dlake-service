@@ -50,7 +50,6 @@ class DLake extends Service {
       // initialize the service
       this._init().then(() => {
         pino.info('initialization done for dlake service named [%s]', this._name)
-        console.log('initialization done for dlake service named [%s]', this._name)
       }).catch(err => {
         pino.error(err, 'initialization failed')
         process.exit(1)

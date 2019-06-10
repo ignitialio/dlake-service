@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 const MongoClient = require('mongodb').MongoClient
-const config = require('../config').mongo
+const config = require('../config').dbConnector.mongo
 
-const users = require('./lib/populate/populate_users.js').populate
-const roles = require('./lib/populate/populate_roles.js').populate
-const notifications = require('./lib/populate/populate_notifications.js').populate
+const users = require('./lib/populate-mongo/populate_users.js').populate
+const roles = require('./lib/populate-roles.js').populate
 
 async function run() {
   try {
@@ -14,9 +13,8 @@ async function run() {
 
     console.log('start populating ' + config.uri + '/' + config.dbName)
     let db = client.db()
-    await roles(db)
-    await users(db)
-    await notifications(db)
+    let userRoles = await users(db)
+    await roles(userRoles)
     console.log('populate done')
     client.close()
   } catch (err) {

@@ -1,24 +1,24 @@
 module.exports = {
   admin: {
-    roles: {
+    'dlake': {
       'create:any': [ '*' ],
       'read:any': [ '*' ],
       'update:any': [ '*' ],
       'delete:any': [ '*' ]
     },
-    users: {
+    'dlake:users': {
       'create:any': [ '*' ],
       'read:any': [ '*' ],
       'update:any': [ '*' ],
       'delete:any': [ '*' ]
     },
-    notifications: {
+    'bob': {
       'create:any': [ '*' ],
       'read:any': [ '*' ],
       'update:any': [ '*' ],
       'delete:any': [ '*' ]
     },
-    connections: {
+    'ted': {
       'create:any': [ '*' ],
       'read:any': [ '*' ],
       'update:any': [ '*' ],
@@ -26,31 +26,38 @@ module.exports = {
     }
   },
   user: {
-    roles: {
+    'dlake': {
       'read:any': [ '*' ]
     },
-    users: {
+    'dlake:users': {
       'read:any': [ '*' ],
-      'update:own': [ '*', 'roles'],
-      'delete:own': [ '*', 'roles']
-    },
-    notifications: {
-      'create:own': [ '*' ],
-      'read:own': [ '*' ],
       'update:own': [ '*' ],
       'delete:own': [ '*' ]
     },
-    connections: {
+    'bob': {
+      'read:any': [ '*' ],
+      'update:any': [ '*' ],
+      'delete:any': [ '*' ]
+    },
+    'ted': {
       'create:any': [ '*' ],
-      'read:any': [ '*' ]
+      'read:any': [ '*' ],
+      'update:any': [ '*' ],
+      'delete:any': [ '*' ]
     }
   },
   anonymous: {
-    roles: {
+    'dlake': {
       'read:any': [ '*' ]
     },
-    users: {
+    'dlake:users': {
       'read:any': [ '_id', 'role', 'firstname', 'lastname', 'avatar' ]
+    },
+    'bob': {
+      'read:any': [ '*' ]
+    },
+    'ted': {
+      'read:own': [ '*' ]
     }
   }
 }

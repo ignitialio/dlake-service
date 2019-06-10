@@ -54,8 +54,8 @@ services:
       - REDIS_MASTER_NAME=mymaster
       - REDIS_SENTINELS=sentinel
       - MONGODB_URI=mongodb://mongo:27017
-      - MONGODB_DBNAME=ignitialio
-      - IIOS_NAMESPACE=ignitialio
+      - MONGODB_DBNAME=dlaketests
+      - IIOS_NAMESPACE=dlaketests
       - IIOS_SERVER_HOST=0.0.0.0
       - IIOS_SERVER_PORT=20991
     networks:
@@ -70,7 +70,7 @@ services:
       - ${PWD}:/opt/dlake
     environment:
       - MONGODB_URI=mongodb://mongo:27017
-      - MONGODB_DBNAME=ignitialio
+      - MONGODB_DBNAME=dlaketests
       - REDIS_MASTER_NAME=mymaster
       - REDIS_SENTINELS=sentinel
     networks:
