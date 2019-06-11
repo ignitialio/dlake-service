@@ -19,7 +19,7 @@
     "test:sentinel": "./test/test-couch.sh"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.0.7",
+    "@ignitial/iio-services": "^2.1.0",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "core-js": "^2.6.9",
