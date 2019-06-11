@@ -11,12 +11,18 @@ let userRoles = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../../tools/data/randomRoles.json'), 'utf8'))
 
 let admin
+let nominalUser
 
 for (admin in userRoles) {
   if (userRoles[admin] === 'admin') break
 }
 
+for (nominalUser in userRoles) {
+  if (userRoles[nominalUser] === 'user') break
+}
+
 console.log('ADMIN', admin)
+console.log('USER ', nominalUser)
 
 var okNominalCounter = 0
 
@@ -41,6 +47,65 @@ if (!process.env.STREAMING) {
         console.log(chalk.red('datum service find method available ✘'))
         console.log(err)
       }
+
+      gateway.api['dlake:users'].find({}, { $userId: nominalUser }).then(async docs => {
+        try {
+          (docs.length >= 4900).should.be.true()
+          console.log(chalk.green('find 4900 users by normal user ✔'))
+
+          let doc = await gateway.api['dlake:users'].d_get({
+            'login.username': nominalUser }, { $userId: nominalUser })
+          doc.name.first = 'Grug'
+
+          gateway.api['dlake:users'].d_update({ 'login.username': nominalUser },
+            doc, { $userId: nominalUser }).then(async result => {
+            console.log(chalk.green('update own ✔'))
+
+            delete doc._id
+            doc.login.username = 'toto'
+
+            try {
+              // prepare
+              await gateway.api['dlake:users'].d_delete({ 'login.username': 'toto' }, { $userId: nominalUser })
+              console.log(chalk.green('delete toto ✔'))
+            } catch (err) {
+              if (err.toString().match('document not found')) {
+                console.log(chalk.green('delete toto ✔'))
+              } else {
+                console.log(chalk.red('delete toto ✘'))
+              }
+            }
+
+            gateway.api['dlake:users'].d_create(doc,
+              { $userId: nominalUser }).then(result => {
+              console.log(chalk.red('create by nominal user ✘'))
+            }).catch(err => {
+              console.log(chalk.green('create by nominal user ✔'))
+            })
+
+            try {
+              // prepare
+              await gateway.api['dlake:users'].d_create(doc, { $userId: admin })
+            } catch (err) {
+              console.log(err)
+            }
+
+            gateway.api['dlake:users'].d_delete({ 'login.username': 'toto' },
+              { $userId: admin }).then(result => {
+              console.log(chalk.green('delete own by nominal user ✔'))
+            }).catch(err => {
+              console.log(chalk.red('delete own by nominal user  ✘'))
+              console.log(err)
+            })
+          }).catch(err => {
+            console.log(chalk.red('update own ✘'))
+            console.log(err)
+          })
+        } catch (err) {
+          console.log(chalk.red('find 4900 users by normal user ✘'))
+          console.log(err)
+        }
+      }).catch(err => console.log(err))
 
       gateway.api['dlake:users'].find({}, { $userId: admin }).then(docs => {
         var idToSearch = docs[0]._id

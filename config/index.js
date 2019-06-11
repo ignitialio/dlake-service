@@ -72,7 +72,12 @@ module.exports = {
     }
   },
   /* collections: uses plural */
-  data: [ 'users' ],
+  data: [{
+    name: 'users',
+    options: {
+      idName: 'login.username'
+    }
+  }],
   /* HTTP server declaration */
   server: {
     /* server host */

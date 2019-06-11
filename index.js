@@ -37,14 +37,11 @@ class DLake extends Service {
     // datum references
     this.data = {}
 
-    // datum config
-    this._datumOptions = {}
-
     // wait for service to be ready in order to initialize it
     utils.waitForPropertySet(this._dbConnector, '_ready', true).then(async () => {
       // load datum instances
       for (let datum of this._options.data) {
-        await this.addDatum(datum)
+        await this.addDatum(datum.name, datum.options)
       }
 
       // initialize the service
@@ -60,7 +57,7 @@ class DLake extends Service {
     })
   }
 
-  addDatum(name, plugin) {
+  addDatum(name, options) {
     return new Promise(async (resolve, reject) => {
       if (!name) {
         throw new Error('missing datum name')
@@ -69,29 +66,29 @@ class DLake extends Service {
       let extendedName = this._name + ':' + name
 
       try {
-        this._datumOptions[name] = this._datumOptions[name] || {}
+        options = options || {}
 
         // get services options from parent configuration
-        this._datumOptions[name] = Object.assign({},
-          _.cloneDeep(this._datumOptions[name]), _.cloneDeep(this._options))
+        options = Object.assign({}, _.cloneDeep(options),
+          _.cloneDeep(this._options))
 
-        this._datumOptions[name].name = extendedName
+        options.name = extendedName
 
-        this._datumOptions[name].server.port =
+        options.server.port =
           this._options.server.port + Object.keys(this.data).length + 1
 
         // inhibits heart beat for sub-services
-        delete this._datumOptions[name].heartbeatPeriod
+        delete options.heartbeatPeriod
 
         let Datum = (new DatumFactory).getDatumClass(this._connectorType)
 
         Datum.prototype.$app = this
         Datum.prototype.$data = this.data
-        this.data[name] = new Datum(this._datumOptions[name])
+        this.data[name] = new Datum(options)
         await this.data[name]._init()
 
         pino.info('deployed datum service [%s] with port [%s]', extendedName,
-          this._datumOptions[name].server.port)
+          options.server.port)
         resolve()
       } catch (err) {
         pino.error(err, 'datum creation failed')
