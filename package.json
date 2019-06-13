@@ -9,17 +9,20 @@
   "scripts": {
     "lint": "eslint --ext .js index.js lib",
     "serve": "vue-cli-service serve",
+    "start:server": "docker-compose up -d mongo redis && node index.js",
     "build": "vue-cli-service build",
     "start": "./start.sh",
-    "dev": "npm-run-all --parallel start serve",
+    "dev": "npm-run-all --parallel start:server serve",
     "build:image": "docker build --rm -t ignitial/dlake . && docker tag ignitial/dlake registry.ignitial.io/ignitial/dlake:${npm_package_version}",
     "publish:docker": "npm run build:image  && docker push registry.ignitial.io/ignitial/dlake:${npm_package_version}",
     "test:mongo": "./test/test-mongo.sh",
     "test:couch": "./test/test-couch.sh",
-    "test:sentinel": "./test/test-couch.sh"
+    "test:sentinel": "./test/test-couch.sh",
+    "populate:mongo": "./test/populate-mongo.sh",
+    "populate:couch": "./test/populate-couch.sh"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.1.0",
+    "@ignitial/iio-services": "^2.1.2",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "core-js": "^2.6.9",
@@ -30,7 +33,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",
-    "@vue/cli-service": "^3.8.0",
+    "@vue/cli-service": "^3.8.3",
     "chalk": "^2.4.2",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",

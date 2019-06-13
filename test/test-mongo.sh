@@ -11,7 +11,7 @@ export APP_VERSION=$(cat package.json \
 echo "app version: ${APP_VERSION}"
 
 docker-compose -f docker-compose-mongo.yml up -d mongo redis
-docker-compose -f docker-compose-mongo.yml up alice dlake > test-mongo.log 2>&1 &
+docker-compose -f docker-compose-mongo.yml up alice dlake > test/logs/test-mongo.log 2>&1 &
 sleep 20
 
 docker-compose -f docker-compose-mongo.yml stop alice dlake

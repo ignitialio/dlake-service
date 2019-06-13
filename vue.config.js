@@ -24,7 +24,7 @@ module.exports = {
       filename: 'build.js'
     },
     entry: {
-      app: './test/main.js'
+      app: './src/dev-main.js'
     }
   }
 }

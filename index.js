@@ -30,6 +30,8 @@ class DLake extends Service {
     connectorOptions.server.port -= 2
     // inhibits heart beat for sub-services
     delete connectorOptions.heartbeatPeriod
+    // remove public options: no specific UI for data items
+    delete connectorOptions.publicOptions
 
     this._dbConnector =
       new DBConnectors[this._connectorType](connectorOptions)
@@ -79,6 +81,8 @@ class DLake extends Service {
 
         // inhibits heart beat for sub-services
         delete options.heartbeatPeriod
+        // remove public options: no specific UI for data items
+        delete options.publicOptions
 
         let Datum = (new DatumFactory).getDatumClass(this._connectorType)
 
