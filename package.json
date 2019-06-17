@@ -22,7 +22,7 @@
     "populate:couch": "./test/populate-couch.sh"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.1.4",
+    "@ignitial/iio-services": "^2.1.5",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "core-js": "^2.6.9",

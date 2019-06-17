@@ -54,11 +54,11 @@ if (!process.env.STREAMING) {
           console.log(chalk.green('find 4900 users by normal user ✔'))
           okNominalCounter++
 
-          let doc = await gateway.api['dlake:users'].d_get({
+          let doc = await gateway.api['dlake:users'].dGet({
             'login.username': nominalUser }, { $userId: nominalUser })
           doc.name.first = 'Grug'
 
-          gateway.api['dlake:users'].d_update({ 'login.username': nominalUser },
+          gateway.api['dlake:users'].dUpdate({ 'login.username': nominalUser },
             doc, { $userId: nominalUser }).then(async result => {
             console.log(chalk.green('update own ✔'))
             okNominalCounter++
@@ -68,7 +68,7 @@ if (!process.env.STREAMING) {
 
             try {
               // prepare
-              await gateway.api['dlake:users'].d_delete({ 'login.username': 'toto' }, { $userId: nominalUser })
+              await gateway.api['dlake:users'].gDelete({ 'login.username': 'toto' }, { $userId: nominalUser })
               console.log(chalk.green('delete toto ✔'))
               okNominalCounter++
             } catch (err) {
@@ -80,7 +80,7 @@ if (!process.env.STREAMING) {
               }
             }
 
-            gateway.api['dlake:users'].d_create(doc,
+            gateway.api['dlake:users'].dCreate(doc,
               { $userId: nominalUser }).then(result => {
               console.log(chalk.red('create by nominal user ✘'))
             }).catch(err => {
@@ -90,12 +90,12 @@ if (!process.env.STREAMING) {
 
             try {
               // prepare
-              await gateway.api['dlake:users'].d_create(doc, { $userId: admin })
+              await gateway.api['dlake:users'].dCreate(doc, { $userId: admin })
             } catch (err) {
               console.log(err)
             }
 
-            gateway.api['dlake:users'].d_delete({ 'login.username': 'toto' },
+            gateway.api['dlake:users'].gDelete({ 'login.username': 'toto' },
               { $userId: admin }).then(result => {
               console.log(chalk.green('delete own by nominal user ✔'))
               okNominalCounter++
@@ -139,7 +139,7 @@ if (!process.env.STREAMING) {
         }
       }).catch(err => console.log(err))
 
-      gateway.api['dlake:users'].d_find({}, { $userId: admin }).then(docs => {
+      gateway.api['dlake:users'].dFind({}, { $userId: admin }).then(docs => {
         var idToSearch = docs[0]._id
         var usernameToCheck = docs[0].login.username
         try {
@@ -147,7 +147,7 @@ if (!process.env.STREAMING) {
           console.log(chalk.green('common API find 4900 users ✔'))
           okNominalCounter++
 
-          gateway.api['dlake:users'].d_get({
+          gateway.api['dlake:users'].dGet({
             _id: idToSearch
           }, { $userId: admin }).then(doc => {
             try {
@@ -165,7 +165,7 @@ if (!process.env.STREAMING) {
         }
       }).catch(err => console.log(err))
 
-      gateway.api['dlake:users'].d_find({}).then(docs => {
+      gateway.api['dlake:users'].dFind({}).then(docs => {
         var idToSearch = docs[0]._id
         var firstnameToCheck = docs[0].name.first
         try {
@@ -173,7 +173,7 @@ if (!process.env.STREAMING) {
           console.log(chalk.green('anonymous common API find 4900 users ✔'))
           okNominalCounter++
 
-          gateway.api['dlake:users'].d_get({
+          gateway.api['dlake:users'].dGet({
             _id: idToSearch
           }).then(doc => {
             try {
@@ -204,11 +204,11 @@ if (!process.env.STREAMING) {
             console.log(result)
           }
 
-          gateway.api['dlake:users'].d_get({}, { $userId: admin }).then(async doc => {
+          gateway.api['dlake:users'].dGet({}, { $userId: admin }).then(async doc => {
             delete doc._id
 
             try {
-              await gateway.api['dlake:users'].d_delete({
+              await gateway.api['dlake:users'].gDelete({
                 'login.username': 'gcrood'
               }, { $userId: admin })
 
@@ -218,14 +218,14 @@ if (!process.env.STREAMING) {
               console.log(chalk.red('delete user with common API ✘'))
             }
 
-            gateway.api['dlake:users'].d_create(doc, { $userId: admin }).then(result => {
+            gateway.api['dlake:users'].dCreate(doc, { $userId: admin }).then(result => {
               console.log(chalk.red('bad unique index for users ✘'))
             }).catch(err => {
               console.log(chalk.green('bad unique index for users ✔'))
               okNominalCounter++
 
               doc.login.username = 'gcrood'
-              gateway.api['dlake:users'].d_create(doc, { $userId: admin }).then(async result => {
+              gateway.api['dlake:users'].dCreate(doc, { $userId: admin }).then(async result => {
                 console.log(chalk.green('create user with common API ✔'))
                 okNominalCounter++
 

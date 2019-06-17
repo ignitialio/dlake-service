@@ -84,7 +84,7 @@ class DLake extends Service {
         // remove public options: no specific UI for data items
         delete options.publicOptions
 
-        let Datum = (new DatumFactory).getDatumClass(this._connectorType)
+        let Datum = (new DatumFactory()).getDatumClass(this._connectorType)
 
         Datum.prototype.$app = this
         Datum.prototype.$data = this.data
