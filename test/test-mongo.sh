@@ -10,6 +10,9 @@ export APP_VERSION=$(cat package.json \
 
 echo "app version: ${APP_VERSION}"
 
+export MONGODB_DBNAME=dlaketests
+export IIOS_NAMESPACE=dlaketests
+
 docker-compose -f docker-compose-mongo.yml up -d mongo redis
 docker-compose -f docker-compose-mongo.yml up alice dlake > test/logs/test-mongo.log 2>&1 &
 sleep 20

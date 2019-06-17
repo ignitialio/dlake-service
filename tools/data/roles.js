@@ -51,7 +51,7 @@ module.exports = {
       'read:any': [ '*' ]
     },
     'dlake:users': {
-      'read:any': [ '_id', 'role', 'firstname', 'lastname', 'avatar' ]
+      'read:any': [ '_id', 'role', 'name', 'picture' ]
     },
     'bob': {
       'read:any': [ '*' ]

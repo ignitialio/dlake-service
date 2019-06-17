@@ -6,8 +6,6 @@ ADD . /opt/dlake
 
 WORKDIR /opt/dlake
 
-RUN mv vue.config.js.prod vue.config.js
-
-RUN npm install && npm run build
+RUN npm install
 
 CMD ["node", "index.js"]

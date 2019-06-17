@@ -59,6 +59,8 @@ module.exports = {
   },
   /* access control: if present, acces control enabled */
   accesscontrol: {
+    /* access control namespace */
+    namespace: process.env.IIOS_NAMESPACE || 'iios',
     /* connector configuration: optional, default same as global connector, but
        on DB 1 */
     connector: {
@@ -91,36 +93,5 @@ module.exports = {
   auth: {
     secret: AUTH_SECRET,
     jwtTimeout: '5h'
-  },
-  /* options published through discovery mechanism */
-  publicOptions: {
-    /* declares component injection */
-    uiComponentInjection: true,
-    /* service description */
-    description: {
-      /* service icon */
-      icon: 'assets/dlake-64.png',
-      /* Internationalization: see Ignitial.io Web App */
-      i18n: {
-        'Data lake for micro-services': [ 'Lac de données pour micro-services', 'Lago de datos para microservicios' ],
-        'Data access from any service':  [ 'Accès aux données à partir de n\'importe quel service',
-          'Acceso a datos desde cualquier servicio'],
-        'Add a new ressource': [ 'Rajouter une nouvelle ressource', 'Añadir un nuevo recurso' ],
-        'Add a new role': [ 'Rajouter un nouveau rôle', 'Añadir un nuevo rol' ],
-        'Add a new access': [ 'Rajouter un nouvel accès', 'Añadir nuevo acceso' ]
-      },
-      /* eventually any other data */
-      title: 'Data lake for micro-services',
-      info: 'Data access from any service'
-    },
-    /* server side translations */
-    i18n: {
-      lang: [ 'en-US', 'fr-FR', 'es-ES' ],
-      translations: {
-        'DO NOT ANSWER': [ 'NE PAS RÉPONDRE', 'NO CONTESTAR' ],
-        'Account creation': [ 'Création de compte', 'Creación de cuenta' ],
-        'An account has been created for you': [ 'Un compte a été créé pour vous', 'Se ha creado una cuenta para usted']
-      }
-    }
   }
 }

@@ -27,7 +27,7 @@ class DLake extends Service {
     // connector name matches type and current service name
     connectorOptions.name = this._name + ':' + this._connectorType
     // sets HTTP server port for connector service
-    connectorOptions.server.port -= 2
+    connectorOptions.server.port -= 1
     // inhibits heart beat for sub-services
     delete connectorOptions.heartbeatPeriod
     // remove public options: no specific UI for data items
@@ -113,11 +113,12 @@ class DLake extends Service {
     return new Promise(async (resolve, reject) => {
       if (!(role && datum)) {
         reject(new Error('missing grants update info'))
+        return
       }
 
       try {
         let extendedName = this._name + ':' + datum
-        let roleData = await this._connector.get('__role:' + role)
+        let roleData = await this._ac.getGrants(role)
 
         if (!grants) {
           delete roleData[extendedName]
@@ -125,10 +126,10 @@ class DLake extends Service {
           roleData[extendedName] = grants
         }
 
-        await this._connector.set('__role:' + role, roleData[extendedName])
+        await this._ac.setGrants(role, roleData[extendedName])
         pino.warn('update grants for role [%s]', role)
 
-        await this._ac._syncGrants()
+        await this._ac.syncGrants()
 
         resolve(roleData[extendedName])
       } catch (err) {
