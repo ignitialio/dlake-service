@@ -8,4 +8,4 @@ WORKDIR /opt/dlake
 
 RUN npm install
 
-CMD ["node", "index.js"]
+CMD ["node", "./server/index.js"]
