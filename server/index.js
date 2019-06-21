@@ -154,7 +154,9 @@ class DLake extends Service {
 
 if (require.main === module) {
   // instantiate service with its configuration
-  new DLake(config)
+  let dlake = new DLake(config)
+
+  console.log('dlake service initialization with options', dlake._options)
 } else {
   exports.DLake = DLake
 }
