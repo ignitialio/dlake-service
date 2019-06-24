@@ -61,8 +61,15 @@ class DLake extends Service {
 
   addDatum(name, options) {
     return new Promise(async (resolve, reject) => {
+      console.log('--DATUM--', name, options)
       if (!name) {
-        throw new Error('missing datum name')
+        reject(new Error('missing datum name'))
+        return
+      }
+
+      if (this.data[name]) {
+        reject(new Error('datum already defined'))
+        return
       }
 
       let extendedName = this._name + ':' + name
@@ -93,6 +100,9 @@ class DLake extends Service {
 
         pino.info('deployed datum service [%s] with port [%s]', extendedName,
           options.server.port)
+
+          console.log('deployed datum service [%s] with port [%s]', extendedName,
+            options.server.port)
         resolve()
       } catch (err) {
         pino.error(err, 'datum creation failed')

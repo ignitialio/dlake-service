@@ -95,6 +95,8 @@ class MongoDatum extends Datum {
     return new Promise((resolve, reject) => {
       this._rawCollection.insertOne(obj, { w: 1 }).then(response => {
         resolve(response.result)
+        this.$app._pushEvent(this._name + ':add', response.result)
+          .catch(err => pino.error(err, 'failed to notify add'))
       }).catch(err => {
         reject(err)
       })
@@ -104,7 +106,7 @@ class MongoDatum extends Datum {
   /* alias to create */
   dPut(obj, grants) {
     /* @_PUT_ */
-    return this._rawCollection.insertOne(obj, { w: 1 })
+    return this.dCreate(obj, grants)
   }
 
   /* get document for query (first match) */
@@ -216,6 +218,8 @@ class MongoDatum extends Datum {
 
         this._rawCollection.updateOne(query, { $set: obj }, { w: 1 }).then(response => {
           resolve(response.result)
+          this.$app._pushEvent(this._name + ':update', response.result)
+            .catch(err => pino.error(err, 'failed to notify update'))
         }).catch(err => {
           reject(err)
         })
@@ -234,6 +238,8 @@ class MongoDatum extends Datum {
 
             this._rawCollection.updateOne(query, { $set: obj }, { w: 1 }).then(response => {
               resolve(response.result)
+              this.$app._pushEvent(this._name + ':update', response.result)
+                .catch(err => pino.error(err, 'failed to notify update'))
             }).catch(err => {
               reject(err)
             })
@@ -258,6 +264,8 @@ class MongoDatum extends Datum {
       if (grants.$grantsAny && grants.$grantsAny.granted) {
         this._rawCollection.deleteOne(query, { w: 1 }).then(response => {
           resolve(response.result)
+          this.$app._pushEvent(this._name + ':delete', response.result)
+            .catch(err => pino.error(err, 'failed to notify delete'))
         }).catch(err => {
           reject(err)
         })
@@ -268,6 +276,8 @@ class MongoDatum extends Datum {
           if (doc && getByPath(doc, this._options.idName) === grants.$userId) {
             this._rawCollection.deleteOne(query, { w: 1 }).then(response => {
               resolve(response.result)
+              this.$app._pushEvent(this._name + ':delete', response.result)
+                .catch(err => pino.error(err, 'failed to notify delete'))
             }).catch(err => {
               reject(err)
             })
