@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker-compose -f docker-compose-mongo.yml up -d mongo redis
+docker-compose -f docker-compose-mongo.yml up -d mongo-dlake redis
 sleep 1
 
 export MONGODB_DBNAME=dlaketests

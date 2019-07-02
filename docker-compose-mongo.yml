@@ -1,9 +1,9 @@
 version: '3.3'
 
 services:
-  redis:
+  redis-dlake:
     image: redis:5.0.5-alpine
-    container_name: redis
+    container_name: redis-dlake
     ports:
       - "6379:6379"
     volumes:
@@ -11,9 +11,9 @@ services:
     networks:
       iio:
 
-  mongo:
+  mongo-dlake:
     image: mongo:4
-    container_name: mongo
+    container_name: mongo-dlake
     volumes:
       - /home/${USER}/iio-data/mongo:/data/db
     ports:
@@ -25,16 +25,16 @@ services:
     image: registry.ignitial.io/ignitial/dlake:${APP_VERSION}
     container_name: dlake
     depends_on:
-      - redis
-      - mongo
+      - redis-dlake
+      - mongo-dlake
     volumes:
       - ${PWD}:/opt/dlake
     ports:
       - "20990-20993:20990-20993"
     environment:
       - DEBUG=${DEBUG}
-      - REDIS_HOST=redis
-      - MONGODB_URI=mongodb://mongo:27017
+      - REDIS_HOST=redis-dlake
+      - MONGODB_URI=mongodb://mongo-dlake:27017
       - MONGODB_DBNAME=${MONGODB_DBNAME}
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
       - IIOS_SERVER_HOST=dlake
@@ -49,7 +49,7 @@ services:
     image: ignitial/iios:latest
     container_name: alice
     depends_on:
-      - redis
+      - redis-dlake
     volumes:
       - ${PWD}:/opt/svc
     environment:
@@ -59,7 +59,7 @@ services:
       - STREAMING=${STREAMING}
       - IIOS_SERVER_HOST=alice
       - IIOS_NAMESPACE=dlaketests
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-dlake
       - DEBUG=${DEBUG}
     command: ["node", "test/consumer/index.js"]
     networks:

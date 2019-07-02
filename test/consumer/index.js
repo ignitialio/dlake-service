@@ -68,7 +68,7 @@ if (!process.env.STREAMING) {
 
             try {
               // prepare
-              await gateway.api['dlake:users'].gDelete({ 'login.username': 'toto' }, { $userId: nominalUser })
+              await gateway.api['dlake:users'].dDelete({ 'login.username': 'toto' }, { $userId: nominalUser })
               console.log(chalk.green('delete toto ✔'))
               okNominalCounter++
             } catch (err) {
@@ -77,6 +77,7 @@ if (!process.env.STREAMING) {
                 okNominalCounter++
               } else {
                 console.log(chalk.red('delete toto ✘'))
+                console.log(err)
               }
             }
 
@@ -95,7 +96,7 @@ if (!process.env.STREAMING) {
               console.log(err)
             }
 
-            gateway.api['dlake:users'].gDelete({ 'login.username': 'toto' },
+            gateway.api['dlake:users'].dDelete({ 'login.username': 'toto' },
               { $userId: admin }).then(result => {
               console.log(chalk.green('delete own by nominal user ✔'))
               okNominalCounter++
@@ -208,7 +209,7 @@ if (!process.env.STREAMING) {
             delete doc._id
 
             try {
-              await gateway.api['dlake:users'].gDelete({
+              await gateway.api['dlake:users'].dDelete({
                 'login.username': 'gcrood'
               }, { $userId: admin })
 
