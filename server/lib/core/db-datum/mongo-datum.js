@@ -94,8 +94,9 @@ class MongoDatum extends Datum {
     /* @_PUT_ */
     return new Promise((resolve, reject) => {
       this._rawCollection.insertOne(obj, { w: 1 }).then(response => {
-        resolve(response.result)
-        this.$app._pushEvent(this._name + ':add', response.result)
+        response = (response.ops && response.ops.length !== 0) ? response.ops[0] : null
+        resolve(response)
+        this.$app._pushEvent(this._name + ':add', response)
           .catch(err => pino.error(err, 'failed to notify add'))
       }).catch(err => {
         reject(err)
@@ -216,13 +217,26 @@ class MongoDatum extends Datum {
           }
         }
 
-        this._rawCollection.updateOne(query, { $set: obj }, { w: 1 }).then(response => {
-          resolve(response.result)
-          this.$app._pushEvent(this._name + ':update', response.result)
-            .catch(err => pino.error(err, 'failed to notify update'))
-        }).catch(err => {
-          reject(err)
-        })
+        this._rawCollection.updateOne(query, { $set: obj }, { w: 1 })
+          .then(async response => {
+            try {
+              if (query._id) {
+                response = { _id: query._id }
+              } else {
+                let doc = await this._rawCollection.findOne(query)
+                response = { _id: doc._id }
+              }
+            } catch (err) {
+              pino.warn(err, 'failed to fetch id')
+            }
+
+            resolve(response)
+
+            this.$app._pushEvent(this._name + ':update', response)
+              .catch(err => pino.error(err, 'failed to notify update'))
+          }).catch(err => {
+            reject(err)
+          })
       } else {
         // already filtered by service access control, so, if here,
         // $grants.granted for Own operations
@@ -236,13 +250,17 @@ class MongoDatum extends Datum {
               }
             }
 
-            this._rawCollection.updateOne(query, { $set: obj }, { w: 1 }).then(response => {
-              resolve(response.result)
-              this.$app._pushEvent(this._name + ':update', response.result)
-                .catch(err => pino.error(err, 'failed to notify update'))
-            }).catch(err => {
-              reject(err)
-            })
+            this._rawCollection.updateOne(query, { $set: obj }, { w: 1 })
+              .then(() => {
+                let response = { _id: doc._id }
+
+                resolve(response)
+
+                this.$app._pushEvent(this._name + ':update', response)
+                  .catch(err => pino.error(err, 'failed to notify update'))
+              }).catch(err => {
+                reject(err)
+              })
           } else {
             if (doc) {
               reject(new Error('access not granted'))
@@ -258,13 +276,28 @@ class MongoDatum extends Datum {
   }
 
   /* deletes matching doc (first match) */
-  gDelete(query, grants) {
+  dDelete(query, grants) {
     /* @_DELETE_ */
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      let doc
+      try {
+        doc = await this._rawCollection.findOne(query)
+
+        if (!doc) {
+          reject(new Error('document not found'))
+          return
+        }
+      } catch (err) {
+        reject(err)
+        return
+      }
+
       if (grants.$grantsAny && grants.$grantsAny.granted) {
-        this._rawCollection.deleteOne(query, { w: 1 }).then(response => {
-          resolve(response.result)
-          this.$app._pushEvent(this._name + ':delete', response.result)
+        this._rawCollection.deleteOne(query, { w: 1 }).then(() => {
+          let response = { _id: doc._id }
+          resolve(response)
+
+          this.$app._pushEvent(this._name + ':delete', response)
             .catch(err => pino.error(err, 'failed to notify delete'))
         }).catch(err => {
           reject(err)
@@ -272,25 +305,21 @@ class MongoDatum extends Datum {
       } else {
         // already filtered by service access control, so, if here,
         // $grants.granted for Own operations
-        this._rawCollection.findOne(query).then(doc => {
-          if (doc && getByPath(doc, this._options.idName) === grants.$userId) {
-            this._rawCollection.deleteOne(query, { w: 1 }).then(response => {
-              resolve(response.result)
-              this.$app._pushEvent(this._name + ':delete', response.result)
-                .catch(err => pino.error(err, 'failed to notify delete'))
-            }).catch(err => {
-              reject(err)
-            })
+        if (doc && getByPath(doc, this._options.idName) === grants.$userId) {
+          this._rawCollection.deleteOne(query, { w: 1 }).then(response => {
+            resolve(response.result)
+            this.$app._pushEvent(this._name + ':delete', response.result)
+              .catch(err => pino.error(err, 'failed to notify delete'))
+          }).catch(err => {
+            reject(err)
+          })
+        } else {
+          if (doc) {
+            reject(new Error('access not granted'))
           } else {
-            if (doc) {
-              reject(new Error('access not granted'))
-            } else {
-              reject(new Error('document not found'))
-            }
+            reject(new Error('document not found'))
           }
-        }).catch(err => {
-          reject(err)
-        })
+        }
       }
     })
   }
