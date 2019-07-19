@@ -98,11 +98,27 @@ class DLake extends Service {
         this.data[name] = new Datum(options)
         await this.data[name]._init()
 
+        if (options.indexes) {
+          // console.log(name, 'DATUM INDEXES', options.indexes)
+          for (let index of options.indexes) {
+            let idxKey = {}
+            idxKey[index.key] = index.type
+            try {
+              // console.log('try to create index [%s] for datum [%s]', index.key, name)
+              await this.data[name].createIndex(idxKey, index.options)
+
+              // console.log('created index [%s] for datum [%s]', index.key, name)
+            } catch (err) {
+              pino.error(err, 'failed to create index %s for %s', index.key, name)
+            }
+          }
+        }
+
         pino.info('deployed datum service [%s] with port [%s]', extendedName,
           options.server.port)
 
-          console.log('deployed datum service [%s] with port [%s]', extendedName,
-            options.server.port)
+        console.log('deployed datum service [%s] with port [%s]', extendedName,
+          options.server.port)
         resolve()
       } catch (err) {
         pino.error(err, 'datum creation failed')
