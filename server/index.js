@@ -59,7 +59,7 @@ class DLake extends Service {
     })
   }
 
-  addDatum(name, options) {
+  addDatum(name, options, grants) {
     return new Promise(async (resolve, reject) => {
       console.log('--DATUM--', name, options)
       if (!name) {
@@ -104,10 +104,10 @@ class DLake extends Service {
             let idxKey = {}
             idxKey[index.key] = index.type
             try {
-              // console.log('try to create index [%s] for datum [%s]', index.key, name)
-              await this.data[name].createIndex(idxKey, index.options)
+              // console.log('--- try to create index [%s] for datum [%s]', index.key, name, index.options)
+              await this.data[name].createIndex(idxKey, index.options, grants)
 
-              // console.log('created index [%s] for datum [%s]', index.key, name)
+              // console.log('--- created index [%s] for datum [%s]', index.key, name)
             } catch (err) {
               pino.error(err, 'failed to create index %s for %s', index.key, name)
             }
