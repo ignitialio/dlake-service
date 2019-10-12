@@ -35,7 +35,7 @@ services:
       - DEBUG=${DEBUG}
       - REDIS_HOST=redis-dlake
       - MONGODB_URI=mongodb://mongo-dlake:27017
-      - MONGODB_DBNAME=${MONGODB_DBNAME}
+      - IIOS_DBNAME=${IIOS_DBNAME}
       - IIOS_NAMESPACE=${IIOS_NAMESPACE}
       - IIOS_SERVER_HOST=dlake
       - IIOS_SERVER_PORT=20991

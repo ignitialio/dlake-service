@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/dlake-service",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Ignitial.io Data Lake service",
   "private": "true",
   "main": "server/index.js",
@@ -20,33 +20,34 @@
     "populate:mongo": "./test/populate-mongo.sh",
     "populate:couch": "./test/populate-couch.sh",
     "docker:build": "docker build --rm -t ignitial/dlake . && docker tag ignitial/dlake registry.ignitial.io/ignitial/dlake:${npm_package_version} && docker tag ignitial/dlake ignitial/dlake:${npm_package_version}",
-    "docker:publish:private": "docker push registry.ignitial.io/ignitial/dlake && docker push registry.ignitial.io/ignitial/dlake:${npm_package_version}",
-    "docker:publish:public": "docker push ignitial/dlake && docker push ignitial/dlake:${npm_package_version}"
+    "docker:publish:private": "npm run docker:build && docker push registry.ignitial.io/ignitial/dlake && docker push registry.ignitial.io/ignitial/dlake:${npm_package_version}",
+    "docker:publish:public": "npm run docker:build && docker push ignitial/dlake && docker push ignitial/dlake:${npm_package_version}",
+    "docker:publish:minikube": "eval $(minikube docker-env) && npm run docker:build"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.2.3",
+    "@ignitial/iio-services": "^2.2.5",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "core-js": "^2.6.9",
-    "lodash": "^4.17.14",
-    "mongodb": "^3.2.7",
+    "lodash": "^4.17.15",
+    "mongodb": "^3.3.2",
     "nano": "^8.1.0",
-    "pino": "^5.12.6"
+    "pino": "^5.13.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.9.2",
-    "@vue/cli-service": "^3.9.2",
+    "@vue/cli-plugin-babel": "^3.12.0",
+    "@vue/cli-service": "^3.12.0",
     "chalk": "^2.4.2",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.18.0",
-    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.2.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-standard": "^4.0.1",
     "got": "^9.6.0",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.22.5",
-    "sass-loader": "^7.1.0",
+    "sass": "^1.23.0",
+    "sass-loader": "^7.3.1",
     "should": "^13.2.3"
   }
 }

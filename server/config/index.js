@@ -44,7 +44,7 @@ module.exports = {
     /* mongodb */
     mongo: {
       uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:40000',
-      dbName: process.env.MONGODB_DBNAME || 'ignitialio',
+      dbName: process.env.IIOS_DBNAME || 'ignitialio',
       options: process.env.MONGODB_OPTIONS,
       maxAttempts: process.env.MONGODB_CONN_MAX_ATTEMPTS || 30,
       user: process.env.MONGODB_USER,
