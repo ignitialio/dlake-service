@@ -56,7 +56,10 @@ class MongoConnector extends Service {
           (options.options ? '?' + options.options : '')
       }
 
-      this._client = await MongoClient.connect(uri, { useNewUrlParser: true })
+      this._client = await MongoClient.connect(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      })
 
       this._db = this._client.db()
 
