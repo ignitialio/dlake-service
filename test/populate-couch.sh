@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker-compose -f docker-compose-couch.yml up -d couch
+docker-compose -f tools/docker/docker-compose-couch.yml up -d couch
 sleep 1
 node tools/populate_db-couch.js
 

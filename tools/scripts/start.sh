@@ -10,4 +10,4 @@ export APP_VERSION=$(cat package.json \
 
 echo "app version: ${APP_VERSION}"
 
-docker-compose up
+docker-compose -f tools/docker/docker-compose.yml up 

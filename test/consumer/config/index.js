@@ -1,10 +1,10 @@
-let REDIS_SENTINELS
+let IIOS_REDIS_SENTINELS
 
-if (process.env.REDIS_SENTINELS) {
-  REDIS_SENTINELS = []
-  let sentinels = process.env.REDIS_SENTINELS.split(',')
+if (process.env.IIOS_REDIS_SENTINELS) {
+  IIOS_REDIS_SENTINELS = []
+  let sentinels = process.env.IIOS_REDIS_SENTINELS.split(',')
   for (let s of sentinels) {
-    REDIS_SENTINELS.push({ host: s.split(':')[0], port: s.split(':')[1] })
+    IIOS_REDIS_SENTINELS.push({ host: s.split(':')[0], port: s.split(':')[1] })
   }
 }
 
@@ -12,7 +12,7 @@ module.exports = {
   /* service name */
   name: 'alice',
   /* eventually disables pub/sub calling mechanism in order to use only HTTP */
-  pubsubRPC: process.env.PUBSUB_RPC,
+  pubsubRPC: process.env.IIOS_PUBSUB_RPC,
   /* discovery servers (gateways) when HTTP only */
   discoveryServers: [],
   /* calling timeout for pub/sub mode */
@@ -29,10 +29,10 @@ module.exports = {
     /* redis server connection */
     redis: {
       /* encoder to be used for packing/unpacking raw messages */
-      encoder: process.env.ENCODER || 'bson',
-      host: process.env.REDIS_HOST,
-      master: process.env.REDIS_MASTER_NAME,
-      sentinels: REDIS_SENTINELS, /* uses redis sentinel if defined */
+      encoder: process.env.IIOS_ENCODER || 'bson',
+      host: process.env.IIOS_REDIS_HOST,
+      master: process.env.IIOS_REDIS_MASTER_NAME,
+      sentinels: IIOS_REDIS_SENTINELS, /* uses redis sentinel if defined */
       port: 6379,
       db: 0,
       ipFamily: 4

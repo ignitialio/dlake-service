@@ -1,6 +1,6 @@
 version: '3.3'
 
-services
+services:
   redis:
     image: redis:5.0.5-alpine
     container_name: redis
@@ -13,20 +13,20 @@ services
         aliases:
           - redis
 
-  couch:
-    image: couchdb
-    container_name: couch
+  mongo:
+    image: mongo:4
+    container_name: mongo
     volumes:
-      - /home/${USER}/iio-data/couch/data:/opt/couchdb/data
+      - /home/${USER}/iio-data/mongo:/data/db
     ports:
-      - "5984:5984"
+      - "40000:27017"
     networks:
       iio:
         aliases:
-          - couch
+          - mongo
 
   dlake:
-    image: registry.ignitial.io/ignitial/dlake:${APP_VERSION}
+    image: ignitial/dlake:${APP_VERSION}
     container_name: dlake
     depends_on:
       - redis
@@ -36,19 +36,19 @@ services
       - "20991:20991"
     environment:
       - DEBUG=${DEBUG}
-      - REDIS_HOST=redis
-      - MONGODB_URI=mongodb://mongo:27017
+      - IIOS_REDIS_HOST=redis
+      - IIOS_MONGODB_URI=mongodb://mongo:27017
       - IIOS_DBNAME=dlaketests
       - IIOS_NAMESPACE=dlaketests
-      - IIOS_SERVER_HOST=dlake
+      - IIOS_SERVER_HOST=0.0.0.0
       - IIOS_SERVER_PORT=20991
-      - PUBSUB_RPC=${PUBSUB_RPC}
-      - ENCODER=${ENCODER}
-      - STREAMING=${STREAMING}
     networks:
       iio:
         aliases:
           - dlake
+
+volumes:
+  redis-data:
 
 networks:
   iio:

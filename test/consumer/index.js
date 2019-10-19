@@ -35,7 +35,7 @@ gateway._init().then(() => {
   console.log(err)
 })
 
-if (!process.env.STREAMING) {
+if (!process.env.IIOS_STREAMING) {
   gateway.on('service:registered', async (serviceName, serviceInfo) => {
     if (serviceName === 'dlake:users') {
       // console.log(serviceInfo.methods)

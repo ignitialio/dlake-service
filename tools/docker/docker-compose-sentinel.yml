@@ -44,16 +44,16 @@ services:
           - mongo
 
   dlake:
-    image: registry.ignitial.io/ignitial/dlake
+    image: registry.gitlab.com/ignitial/dlake
     container_name: dlake
     volumes:
       - ${PWD}:/opt/dlake
     ports:
       - "20991:20991"
     environment:
-      - REDIS_MASTER_NAME=mymaster
-      - REDIS_SENTINELS=sentinel
-      - MONGODB_URI=mongodb://mongo:27017
+      - IIOS_REDIS_MASTER_NAME=mymaster
+      - IIOS_REDIS_SENTINELS=sentinel
+      - IIOS_MONGODB_URI=mongodb://mongo:27017
       - IIOS_DBNAME=dlaketests
       - IIOS_NAMESPACE=dlaketests
       - IIOS_SERVER_HOST=0.0.0.0
@@ -69,10 +69,10 @@ services:
     volumes:
       - ${PWD}:/opt/dlake
     environment:
-      - MONGODB_URI=mongodb://mongo:27017
+      - IIOS_MONGODB_URI=mongodb://mongo:27017
       - IIOS_DBNAME=dlaketests
-      - REDIS_MASTER_NAME=mymaster
-      - REDIS_SENTINELS=sentinel
+      - IIOS_REDIS_MASTER_NAME=mymaster
+      - IIOS_REDIS_SENTINELS=sentinel
     networks:
       iio:
         aliases:

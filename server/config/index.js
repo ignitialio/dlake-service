@@ -2,16 +2,16 @@ const fs = require('fs')
 
 // REDIS configuration
 // -----------------------------------------------------------------------------
-const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1'
-const REDIS_PORT = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379
-const REDIS_DB = process.env.REDIS_DB || 0
-let REDIS_SENTINELS
+const IIOS_REDIS_HOST = process.env.IIOS_REDIS_HOST || '127.0.0.1'
+const IIOS_REDIS_PORT = process.env.IIOS_REDIS_PORT ? parseInt(process.env.IIOS_REDIS_PORT) : 6379
+const IIOS_REDIS_DB = process.env.IIOS_REDIS_DB || 0
+let IIOS_REDIS_SENTINELS
 
-if (process.env.REDIS_SENTINELS) {
-  REDIS_SENTINELS = []
-  let sentinels = process.env.REDIS_SENTINELS.split(',')
+if (process.env.IIOS_REDIS_SENTINELS) {
+  IIOS_REDIS_SENTINELS = []
+  let sentinels = process.env.IIOS_REDIS_SENTINELS.split(',')
   for (let s of sentinels) {
-    REDIS_SENTINELS.push({ host: s.split(':')[0], port: s.split(':')[1] })
+    IIOS_REDIS_SENTINELS.push({ host: s.split(':')[0], port: s.split(':')[1] })
   }
 }
 
@@ -31,24 +31,24 @@ module.exports = {
   connector: {
     redis: {
       /* encoder to be used for packing/unpacking raw messages */
-      encoder: process.env.ENCODER || 'bson',
-      master: process.env.REDIS_MASTER_NAME,
-      sentinels: REDIS_SENTINELS,
-      host: REDIS_HOST,
-      port: REDIS_PORT,
-      db: REDIS_DB
+      encoder: process.env.IIOS_ENCODER || 'bson',
+      master: process.env.IIOS_REDIS_MASTER_NAME,
+      sentinels: IIOS_REDIS_SENTINELS,
+      host: IIOS_REDIS_HOST,
+      port: IIOS_REDIS_PORT,
+      db: IIOS_REDIS_DB
     }
   },
   /* db connectors */
   dbConnector: {
     /* mongodb */
     mongo: {
-      uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:40000',
+      uri: process.env.IIOS_MONGODB_URI || 'mongodb://127.0.0.1:40000',
       dbName: process.env.IIOS_DBNAME || 'ignitialio',
-      options: process.env.MONGODB_OPTIONS,
-      maxAttempts: process.env.MONGODB_CONN_MAX_ATTEMPTS || 30,
-      user: process.env.MONGODB_USER,
-      password: process.env.MONGODB_PASSWORD
+      options: process.env.IIOS_MONGODB_OPTIONS,
+      maxAttempts: process.env.IIOS_MONGODB_CONN_MAX_ATTEMPTS || 30,
+      user: process.env.IIOS_MONGODB_USER,
+      password: process.env.IIOS_MONGODB_PASSWORD
     }/* ,
     couch: {
       uri: process.env.COUCHDB_URI || 'http://127.0.0.1:5984',
@@ -66,7 +66,7 @@ module.exports = {
     connector: {
       /* redis server connection */
       redis: {
-        host: process.env.REDIS_HOST,
+        host: process.env.IIOS_REDIS_HOST,
         port: 6379,
         db: 1,
         ipFamily: 4

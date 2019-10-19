@@ -1,7 +1,7 @@
 # dlake: Ignitial.io service
 
 > WARNING!
-> WIP: only Mongo is available for now as database engine
+> only Mongo is available for now as database engine. Couch is WIP
 
 Provides role based access controlled database access for IgnitialIO web apps.
 
@@ -18,7 +18,7 @@ The following _npm run_ targets are available:
 - _prod:start_: starts production service container
 - _prod:stop_: stops and cleans up production service container
 - _docker:build_: builds Docker image for the service
-- _docker:publish:private_: publishes Docker image to an eventually private Docker registry (_registry.ignitial.io_
+- _docker:publish:private_: publishes Docker image to an eventually private Docker registry (_registry.gitlab.com_
   is private: you must change this, unless we gave you an access to it)  
 - _docker:publish:public_: publishes Docker image to Docker Hub registry (_ignitial/_
   means that this uses _ignitial_: you must change this, unless we gave you an access to it)
@@ -37,5 +37,15 @@ Build service image and deploy it in the context of your need (web application
 
 ## Testing
 
-In the coming versions it will be possible to test service within a web app context
+You need first to populate the database in order to run the test:
+
+```bash
+npm run populate:mongo
+npm run test:mongo
+```
+
+Currently only mongo option is tested and operational. Others DB engines including CouchDB will
+be available in the future.
+
+In the coming versions it will be possible to test the service within a web app context
 thanks to _@ignitial/iios-app-client_ and _@ignitial/iios-app-server_ libs.

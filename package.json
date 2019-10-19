@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/dlake-service",
-  "version": "3.0.5",
+  "version": "3.1.0",
   "description": "Ignitial.io Data Lake service",
   "private": "true",
   "main": "server/index.js",
@@ -11,18 +11,19 @@
     "lint": "eslint --ext .js index.js lib",
     "client:build": "vue-cli-service build",
     "client:serve": "vue-cli-service serve",
-    "start:server": "docker-compose up -d mongo redis && node ./server/index.js",
-    "start": "./start.sh",
-    "dev": "npm-run-all --parallel start:server client:serve",
+    "server": "npm run client:build && docker-compose up -d mongo redis && node ./server/index.js",
+    "dev:start": "npm-run-all --parallel server client:serve",
     "test:mongo": "./test/test-mongo.sh",
     "test:couch": "./test/test-couch.sh",
     "test:sentinel": "./test/test-couch.sh",
     "populate:mongo": "./test/populate-mongo.sh",
     "populate:couch": "./test/populate-couch.sh",
-    "docker:build": "docker build --rm -t ignitial/dlake . && docker tag ignitial/dlake registry.ignitial.io/ignitial/dlake:${npm_package_version} && docker tag ignitial/dlake ignitial/dlake:${npm_package_version}",
-    "docker:publish:private": "npm run docker:build && docker push registry.ignitial.io/ignitial/dlake && docker push registry.ignitial.io/ignitial/dlake:${npm_package_version}",
+    "docker:build": "docker build --rm -t ignitial/dlake . && docker tag ignitial/dlake registry.gitlab.com/ignitial/dlake:${npm_package_version} && docker tag ignitial/dlake ignitial/dlake:${npm_package_version}",
+    "docker:build:minikube": "eval $(minikube docker-env) && npm run docker:build",
+    "docker:start": "tools/scripts/start.sh",
+    "docker:publish:private": "npm run docker:build && docker push registry.gitlab.com/ignitial/dlake && docker push registry.gitlab.com/ignitial/dlake:${npm_package_version}",
     "docker:publish:public": "npm run docker:build && docker push ignitial/dlake && docker push ignitial/dlake:${npm_package_version}",
-    "docker:publish:minikube": "eval $(minikube docker-env) && npm run docker:build"
+    "docker:publish:minikube": "docker save ignitial/dlake:${npm_package_version} | (eval $(minikube docker-env) && docker load)"
   },
   "dependencies": {
     "@ignitial/iio-services": "^2.2.5",
