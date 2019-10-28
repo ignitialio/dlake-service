@@ -1,6 +1,6 @@
 const IIOSAccesControl = require('@ignitial/iio-services/lib/accesscontrol').IIOSAccesControl
 const roles = require('../data/roles')
-var users = require('../data/users')
+const users = require('../data/users')
 
 exports.populate = async function(setOfUsers) {
   console.log('create IIOS ac instance')

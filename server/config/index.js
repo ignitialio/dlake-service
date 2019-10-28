@@ -1,10 +1,23 @@
 const fs = require('fs')
 
+// Mongo secrets
+var IIOS_MONGODB_PASSWORD = process.env.IIOS_MONGODB_PASSWORD
+
+// get from docker secrets
+if (!IIOS_MONGODB_PASSWORD) {
+  try {
+    IIOS_MONGODB_PASSWORD = fs.readFileSync('/run/secrets/mongodb_pwd', 'utf8').replace('\n', '')
+  } catch (err) {
+    console.log('warning: failed to get Mongo credentials from file')
+  }
+}
+
 // REDIS configuration
 // -----------------------------------------------------------------------------
 const IIOS_REDIS_HOST = process.env.IIOS_REDIS_HOST || '127.0.0.1'
 const IIOS_REDIS_PORT = process.env.IIOS_REDIS_PORT ? parseInt(process.env.IIOS_REDIS_PORT) : 6379
 const IIOS_REDIS_DB = process.env.IIOS_REDIS_DB || 0
+const IIOS_REDIS_ACCESSDB = process.env.IIOS_REDIS_ACCESSDB || 1
 let IIOS_REDIS_SENTINELS
 
 if (process.env.IIOS_REDIS_SENTINELS) {
@@ -14,9 +27,6 @@ if (process.env.IIOS_REDIS_SENTINELS) {
     IIOS_REDIS_SENTINELS.push({ host: s.split(':')[0], port: s.split(':')[1] })
   }
 }
-
-// Authentication secrets
-const AUTH_SECRET = process.env.AUTH_SECRET || 'Once upon the time, for ever'
 
 // Main configuration structure
 // -----------------------------------------------------------------------------
@@ -48,7 +58,7 @@ module.exports = {
       options: process.env.IIOS_MONGODB_OPTIONS,
       maxAttempts: process.env.IIOS_MONGODB_CONN_MAX_ATTEMPTS || 30,
       user: process.env.IIOS_MONGODB_USER,
-      password: process.env.IIOS_MONGODB_PASSWORD
+      password: IIOS_MONGODB_PASSWORD
     }/* ,
     couch: {
       uri: process.env.COUCHDB_URI || 'http://127.0.0.1:5984',
@@ -66,9 +76,13 @@ module.exports = {
     connector: {
       /* redis server connection */
       redis: {
-        host: process.env.IIOS_REDIS_HOST,
-        port: 6379,
-        db: 1,
+        encoder: process.env.IIOS_ENCODER || 'bson',
+        master: process.env.IIOS_REDIS_MASTER_NAME,
+        sentinels: IIOS_REDIS_SENTINELS,
+        host: IIOS_REDIS_HOST,
+        port: IIOS_REDIS_PORT,
+        /* access db is different from discovery */
+        db: IIOS_REDIS_ACCESSDB,
         ipFamily: 4
       }
     }
@@ -88,10 +102,5 @@ module.exports = {
     port: process.env.IIOS_SERVER_PORT || 24097,
     /* path to statically serve (at least one asset for icons for example) */
     path: process.env.IIOS_SERVER_PATH_TO_SERVE || './dist'
-  },
-  /* authentication secrets and timeout */
-  auth: {
-    secret: AUTH_SECRET,
-    jwtTimeout: '5h'
   }
 }

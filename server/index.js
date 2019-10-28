@@ -9,6 +9,10 @@ const pino = require('./lib/utils').pino
 
 const config = require('./config')
 
+// minimal data for initial populate
+const roles = require('./data/minimal-roles')
+const adminUser = require('./data/admin')
+
 class DLake extends Service {
   constructor(options) {
     super(options)
@@ -47,7 +51,8 @@ class DLake extends Service {
       }
 
       // initialize the service
-      this._init().then(() => {
+      this._init().then(async () => {
+        await this._populate()
         pino.info('initialization done for dlake service named [%s]', this._name)
       }).catch(err => {
         pino.error(err, 'initialization failed')
@@ -57,6 +62,31 @@ class DLake extends Service {
       pino.error(err, 'service not ready on time')
       process.exit(1)
     })
+  }
+
+  async _populate() {
+    let query = {}
+    query[this.data.users._options.idName] = 'admin'
+
+    try {
+      await utils.waitForPropertyInit(this.data, 'users')
+
+      let admin = await this.data.users._rawCollection.findOne(query)
+
+      if (!admin) {
+        for (let role in roles) {
+          await this._ac.setGrants(role, roles[role])
+        }
+
+        await this._ac.setUserRole('admin', 'admin')
+        await this.data.users._rawCollection.insertOne(adminUser)
+        pino.warn('minimal populate done')
+      } else {
+        pino.warn('minimal populate ALREADY existing')
+      }
+    } catch (err) {
+      pino.error(err, 'failed to auto-populate data')
+    }
   }
 
   addDatum(name, options, grants) {
@@ -181,6 +211,10 @@ class DLake extends Service {
 if (require.main === module) {
   // instantiate service with its configuration
   let dlake = new DLake(config)
+  let options = _.cloneDeep(dlake._options)
+  if (options.dbConnector.mongo) {
+    delete options.dbConnector.mongo.password
+  }
 
   console.log('dlake service initialization with options', dlake._options)
 } else {

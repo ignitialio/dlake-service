@@ -30,10 +30,19 @@ Add server files in the _server_ folder and client ones in _src_.
 You can add any dependency thanks to _npm_. The only constraint is to have
 dependencies that work with webpack, if used client side.
 
-## Use
+## Usage
 
 Build service image and deploy it in the context of your need (web application
   deploy, in this case).
+
+See deploy configuration for [IIOS app template](https://github.com/ignitialio/iio-app-material-template).  
+
+### Auto-populate  
+
+Service auto-populates databases with minimal configuration for an IIOS, including
+one _admin_ user (password: _toto13!_).
+
+> WARNING: do not forget to change password when using in prod
 
 ## Testing
 
