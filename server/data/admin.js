@@ -28,7 +28,7 @@ module.exports = {
   login: {
     uuid: "c4168eac-84b8-46ea-b735-c9da9bfb97fd",
     username: "admin",
-    password: "hash",
+    password: hash,
     salt: "GtRFz4NE",
     md5: "5c581c5748fc8c35bd7f16eac9efbb55",
     sha1: "c3feb8887abed9ec1561b9aa2c9f58de21d1d3d9",

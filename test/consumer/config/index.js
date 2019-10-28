@@ -24,6 +24,8 @@ module.exports = {
     /* maw number of points to store locally */
     maxPoints: 100
   },
+  /* populate db by default: default=false */
+  populate: false,
   /* PUB/SUB/KV connector */
   connector: {
     /* redis server connection */

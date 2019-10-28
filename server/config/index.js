@@ -37,6 +37,8 @@ module.exports = {
   namespace: process.env.IIOS_NAMESPACE || 'iios',
   /* heartbeat */
   heartbeatPeriod: 5000,
+  /* populate db by default: default=false */
+  populate: process.env.IIOS_POPULATE === 'true' ? true : false,
   /* redis server connection */
   connector: {
     redis: {
@@ -91,7 +93,15 @@ module.exports = {
   data: [{
     name: 'users',
     options: {
-      idName: 'login.username'
+      idName: 'login.username',
+      indexes: [{
+        key: 'login.username',
+        type: -1,
+        options: {
+          name: 'name_desc',
+          unique: true
+        }
+      }]
     }
   }],
   /* HTTP server declaration */

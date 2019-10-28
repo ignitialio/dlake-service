@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const fs = require('fs')
 
 const DBConnectors = require('./lib/connectors')
 const DatumFactory = require('./lib/core/datum-factory')
@@ -51,9 +52,13 @@ class DLake extends Service {
       }
 
       // initialize the service
-      this._init().then(async () => {
-        await this._populate()
-        pino.info('initialization done for dlake service named [%s]', this._name)
+      this._init(async () => {
+        if (this._options.populate) {
+          await this._populate()
+        }
+      }).then(() => {
+        pino.info('initialization done for dlake service named [%s] version [%s]',
+          this._name, this._packageJson.version)
       }).catch(err => {
         pino.error(err, 'initialization failed')
         process.exit(1)
@@ -72,13 +77,23 @@ class DLake extends Service {
       await utils.waitForPropertyInit(this.data, 'users')
 
       let admin = await this.data.users._rawCollection.findOne(query)
+      let adminRole = await this._ac.getUserRole('admin')
 
-      if (!admin) {
+      if (!admin || !adminRole) {
         for (let role in roles) {
           await this._ac.setGrants(role, roles[role])
         }
 
         await this._ac.setUserRole('admin', 'admin')
+        await this._ac.syncGrants()
+
+        for (let datum in this.data) {
+          await this.data[datum]._ac.syncGrants()
+        }
+
+        // test
+        let tmpGrants = this._ac.rolePermission('__privileged__', 'dlake:users', 'readOwn')
+        //
         await this.data.users._rawCollection.insertOne(adminUser)
         pino.warn('minimal populate done')
       } else {
@@ -91,7 +106,7 @@ class DLake extends Service {
 
   addDatum(name, options, grants) {
     return new Promise(async (resolve, reject) => {
-      console.log('--DATUM--', name, options)
+      // console.log('--DATUM--', name, options)
       if (!name) {
         reject(new Error('missing datum name'))
         return
@@ -147,7 +162,7 @@ class DLake extends Service {
         pino.info('deployed datum service [%s] with port [%s]', extendedName,
           options.server.port)
 
-        console.log('deployed datum service [%s] with port [%s]', extendedName,
+        console.log('--DATUM-- deployed datum service [%s] with port [%s]', extendedName,
           options.server.port)
         resolve()
       } catch (err) {
@@ -213,10 +228,11 @@ if (require.main === module) {
   let dlake = new DLake(config)
   let options = _.cloneDeep(dlake._options)
   if (options.dbConnector.mongo) {
-    delete options.dbConnector.mongo.password
+    options.dbConnector.mongo.password = '<obfuscated>'
   }
 
-  console.log('dlake service initialization with options', dlake._options)
+  console.log('dlake [%s] service initialization with options [%o]',
+    dlake._packageJson.version, options)
 } else {
   exports.DLake = DLake
 }
