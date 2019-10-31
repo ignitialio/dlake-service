@@ -93,6 +93,10 @@ class MongoDatum extends Datum {
   dCreate(obj, grants) {
     /* @_PUT_ */
     return new Promise((resolve, reject) => {
+      obj._lastModified = new Date()
+      // log
+      pino.info(obj._lastModified + ' - ' + this.name + ' -CREATE-', obj)
+
       this._rawCollection.insertOne(obj, { w: 1 }).then(response => {
         response = (response.ops && response.ops.length !== 0) ? response.ops[0] : null
         resolve(response)
@@ -113,6 +117,9 @@ class MongoDatum extends Datum {
   /* get document for query (first match) */
   dGet(query, grants) {
     /* @_GET_ */
+    // log
+    pino.info(new Date() + ' - ' + this.name + ' -GET-', query)
+
     if (grants.$grantsAny && grants.$grantsAny.granted) {
       let options = { projection: {} }
 
@@ -161,6 +168,9 @@ class MongoDatum extends Datum {
   /* get documents for query */
   dFind(query, grants) {
     /* @_GET_ */
+    // log
+    pino.info(new Date() + ' - ' + this.name + ' -FIND-', query)
+
     if (grants.$grantsAny && grants.$grantsAny.granted) {
       let options = { projection: {} }
 
@@ -208,6 +218,11 @@ class MongoDatum extends Datum {
   dUpdate(query, obj, grants) {
     /* @_POST_ */
     return new Promise((resolve, reject) => {
+      // last modification log
+      obj._lastModified = new Date()
+      // log
+      pino.info(obj._lastModified + ' - ' + this.name + ' -UPDATE-', query, obj)
+
       if (grants.$grantsAny && grants.$grantsAny.granted) {
         for (let attr of grants.$grantsAny.attributes) {
           if (attr[0] === '!') {
@@ -278,6 +293,9 @@ class MongoDatum extends Datum {
   /* deletes matching doc (first match) */
   dDelete(query, grants) {
     /* @_DELETE_ */
+    // log
+    pino.info(new Date() + ' - ' + this.name + ' -DELETE-', query)
+
     return new Promise(async (resolve, reject) => {
       let doc
       try {
