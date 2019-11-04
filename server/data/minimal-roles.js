@@ -35,12 +35,6 @@ module.exports = {
       'read:any': [ '*' ],
       'update:any': [ '*' ],
       'delete:any': [ '*' ]
-    },
-    'dlake:myitems': {
-      'create:any': [ '*' ],
-      'read:any': [ '*' ],
-      'update:any': [ '*' ],
-      'delete:any': [ '*' ]
     }
   },
   admin: {
@@ -77,12 +71,6 @@ module.exports = {
       'read:any': [ '*' ],
       'update:any': [ '*' ],
       'delete:any': [ '*' ]
-    },
-    'dlake:myitems': {
-      'create:any': [ '*' ],
-      'read:any': [ '*' ],
-      'update:any': [ '*' ],
-      'delete:any': [ '*' ]
     }
   },
   user: {
@@ -110,12 +98,6 @@ module.exports = {
       'create:own': [ '*' ],
       'read:own': [ '*' ],
       'delete:own': [ '*' ]
-    },
-    'dlake:myitems': {
-      'create:any': [ '*' ],
-      'read:any': [ '*' ],
-      'update:any': [ '*' ],
-      'delete:any': [ '*' ]
     }
   },
   anonymous: {
@@ -133,9 +115,6 @@ module.exports = {
       'read:own': [ '*' ]
     },
     'dlake:schemas': {
-      'read:any': [ '*' ]
-    },
-    'dlake:myitems': {
       'read:any': [ '*' ]
     }
   }

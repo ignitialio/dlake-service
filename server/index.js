@@ -104,6 +104,82 @@ class DLake extends Service {
     }
   }
 
+  /* ------------------------------------------------------------------------
+      update grants for datum
+     ------------------------------------------------------------------------ */
+  _updateGrantsForDatum(role, datum, grants) {
+    return new Promise(async (resolve, reject) => {
+      if (!this._ac) {
+        reject(new Error('service has not access control'))
+        return
+      }
+
+      if (!role) {
+        reject(new Error('missing role'))
+        return
+      }
+
+      try {
+        let roleData = await this._ac.getGrants(role)
+        roleData = roleData || {}
+
+        // deletes only if indicates null
+        if (grants === null) {
+          delete roleData[datum]
+        } else {
+          // MERGE with existing: DOES NOT OVERWRITE
+          roleData[datum] = { ...roleData[datum], ...grants }
+        }
+
+        await this._ac.setGrants(role, roleData)
+        await this._ac.syncGrants()
+
+        resolve(datum)
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  /*
+   * update roles as per an input dictionary: same format as roles config
+       Ex:
+       grants: {
+         'uberrole': {
+           'dlake:mydatum': {
+             'create:any':...
+           }
+         }
+       }
+
+       ...
+       this._ac.setGrants('uberrole', {
+         'dlake:mydatum': {
+           'create:any':...
+         }
+       })
+   */
+  _updateRolesAndGrands(rag) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        for (let role in rag) {
+          for (let datum in rag[role]) {
+            await this._updateGrantsForDatum(role, datum, rag[role][datum])
+          }
+        }
+
+        resolve()
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  /*
+   * add new Datum sub-service to current data service
+   * - can be done remotely
+   * - updates related grants
+   */
   addDatum(name, options, grants) {
     return new Promise(async (resolve, reject) => {
       // console.log('--DATUM--', name, options)
@@ -159,6 +235,12 @@ class DLake extends Service {
           }
         }
 
+        if (options.grants) {
+          // TBD: check that roles grants correspond to current datum
+          await this._updateRolesAndGrands(options.grants)
+          pino.warn('grants have been updated as per datum [%s] config when datum added', name)
+        }
+
         pino.info('deployed datum service [%s] with port [%s]', extendedName,
           options.server.port)
 
@@ -172,6 +254,10 @@ class DLake extends Service {
     })
   }
 
+  /*
+   * remove datum sub-service from current data service
+   * - can be done remotely
+   */
   removeDatum(name) {
     return new Promise((resolve, reject) => {
       this.data[name]._destroy().then(() => {
@@ -180,44 +266,13 @@ class DLake extends Service {
     })
   }
 
-  updateGrants(role, datum, grants) {
-    return new Promise(async (resolve, reject) => {
-      if (!(role && datum)) {
-        reject(new Error('missing grants update info'))
-        return
-      }
-
-      try {
-        let extendedName = this._name + ':' + datum
-        let roleData = await this._ac.getGrants(role)
-
-        if (!grants) {
-          delete roleData[extendedName]
-        } else {
-          roleData[extendedName] = grants
-        }
-
-        await this._ac.setGrants(role, roleData[extendedName])
-        pino.warn('update grants for role [%s]', role)
-
-        await this._ac.syncGrants()
-
-        resolve(roleData[extendedName])
-      } catch (err) {
-        reject(err)
-      }
-    })
-  }
-
-  /* update roles as per an input dictionary: same foramt as config */
-  updateDatumRoles(roles) {
-    return new Promise(async (resolve, reject) => {
-      for (let role in roles) {
-        for (let datum in roles[role]) {
-          await this.updateGrants(role, datum, roles[role][datum])
-        }
-      }
-    })
+  /*
+   * get roles as per an input dictionary: same format as config
+   * - can be done remotely
+   */
+  getRolesAndGrants() {
+    /* @_GET_ */
+    return this._ac.getRolesAndGrants()
   }
 
   /* _destroy called automatically for all services: no need to do it */
@@ -231,8 +286,13 @@ if (require.main === module) {
     options.dbConnector.mongo.password = '<obfuscated>'
   }
 
-  console.log('dlake [%s] service initialization with options [%o]',
-    dlake._packageJson.version, options)
+  if (process.env.IIOS_DLAKE_SHOW_OPTIONS) {
+    console.log('dlake [%s] service initialization with options [%o]',
+      dlake._packageJson.version, options)
+  } else {
+    console.log('dlake [%s] service initialization done',
+      dlake._packageJson.version)
+  }
 } else {
   exports.DLake = DLake
 }

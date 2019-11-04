@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/dlake-service",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "Ignitial.io Data Lake service",
   "private": "true",
   "main": "server/index.js",
@@ -26,7 +26,7 @@
     "docker:publish:minikube": "docker save ignitial/dlake:${npm_package_version} | (eval $(minikube docker-env) && docker load)"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.2.8",
+    "@ignitial/iio-services": "^2.2.10",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "lodash": "^4.17.15",
@@ -46,7 +46,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "got": "^9.6.0",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.23.1",
+    "sass": "^1.23.3",
     "sass-loader": "^7.3.1",
     "should": "^13.2.3"
   }
