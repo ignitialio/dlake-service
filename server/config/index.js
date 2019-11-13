@@ -112,5 +112,25 @@ module.exports = {
     port: process.env.IIOS_SERVER_PORT || 24097,
     /* path to statically serve (at least one asset for icons for example) */
     path: process.env.IIOS_SERVER_PATH_TO_SERVE || './dist'
+  },
+  /* options published through discovery mechanism */
+  publicOptions: {
+    /* declares component injection */
+    uiComponentInjection: false,
+    /* service description */
+    description: {
+      /* service icon */
+      icon: 'assets/dlake-64.png',
+      /* Internationalization: see Ignitial.io Web App */
+      i18n: {
+        'Data access service': [ 'Service d\'accès aux données' ],
+        'Data access for MongoDB, etc. trough IIO access control':  [
+          'Accès aux données MongoDB etc. avec contrôle d\'accès IIO'
+        ]
+      },
+      /* eventually any other data */
+      title: 'Data access service',
+      info: 'Data access for MongoDB, etc. trough IIO access control'
+    }
   }
 }
