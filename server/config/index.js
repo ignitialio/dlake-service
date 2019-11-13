@@ -111,7 +111,7 @@ module.exports = {
     /* server port: base for each datum service port = incremented from this */
     port: process.env.IIOS_SERVER_PORT || 24097,
     /* path to statically serve (at least one asset for icons for example) */
-    path: process.env.IIOS_SERVER_PATH_TO_SERVE || './dist'
+    path: process.env.IIOS_SERVER_PATH_TO_SERVE || './public'
   },
   /* options published through discovery mechanism */
   publicOptions: {
