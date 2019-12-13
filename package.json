@@ -26,13 +26,13 @@
     "docker:publish:minikube": "docker save ignitial/dlake:${npm_package_version} | (eval $(minikube docker-env) && docker load)"
   },
   "dependencies": {
-    "@ignitial/iio-services": "^2.2.10",
+    "@ignitial/iio-services": "^2.3.1",
     "accesscontrol": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "lodash": "^4.17.15",
-    "mongodb": "^3.3.3",
+    "mongodb": "^3.4.0",
     "nano": "^8.1.0",
-    "pino": "^5.13.5"
+    "pino": "^5.14.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.12.1",
@@ -40,13 +40,13 @@
     "chalk": "^2.4.2",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-node": "^9.2.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "got": "^9.6.0",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.23.3",
+    "sass": "^1.23.7",
     "sass-loader": "^7.3.1",
     "should": "^13.2.3"
   }
