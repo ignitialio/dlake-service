@@ -234,15 +234,28 @@ class MongoDatum extends Datum {
 
         this._rawCollection.updateOne(query, { $set: obj }, { w: 1 })
           .then(async response => {
+            if (response.result.n === 0) {
+              reject(new Error('update failed'))
+              return
+            }
+            
             try {
               if (query._id) {
                 response = { _id: query._id }
               } else {
                 let doc = await this._rawCollection.findOne(query)
-                response = { _id: doc._id }
+                if (doc) {
+                  response = { _id: doc._id }
+                } else {
+                  reject(new Error('update failed'))
+                  pino.warn(err, 'impossible to fetch id: update failed')
+                  return
+                }
               }
             } catch (err) {
-              pino.warn(err, 'failed to fetch id')
+              reject(new Error('update failed'))
+              pino.warn(err, 'impossible to fetch id: update failed')
+              return
             }
 
             resolve(response)
