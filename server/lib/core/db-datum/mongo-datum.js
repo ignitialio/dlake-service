@@ -238,7 +238,7 @@ class MongoDatum extends Datum {
               reject(new Error('update failed'))
               return
             }
-            
+
             try {
               if (query._id) {
                 response = { _id: query._id }
@@ -248,12 +248,12 @@ class MongoDatum extends Datum {
                   response = { _id: doc._id }
                 } else {
                   reject(new Error('update failed'))
-                  pino.warn(err, 'impossible to fetch id: update failed')
+                  pino.warn('impossible to fetch id: update failed')
                   return
                 }
               }
             } catch (err) {
-              reject(new Error('update failed'))
+              reject(err)
               pino.warn(err, 'impossible to fetch id: update failed')
               return
             }
