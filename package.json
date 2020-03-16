@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/dlake-service",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "description": "Ignitial.io Data Lake service",
   "main": "server/index.js",
   "author": "Victor Andritoiu <devandrito@gmail.com>",
