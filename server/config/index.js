@@ -6,7 +6,8 @@ var IIOS_MONGODB_PASSWORD = process.env.IIOS_MONGODB_PASSWORD
 // get from docker secrets
 if (!IIOS_MONGODB_PASSWORD) {
   try {
-    IIOS_MONGODB_PASSWORD = fs.readFileSync('/run/secrets/mongodb_pwd', 'utf8').replace('\n', '')
+    IIOS_MONGODB_PASSWORD = fs.readFileSync('/run/secrets/' +
+      (process.env.IIOS_MONGODB_SECRETS || 'mongodb_pwd'), 'utf8').replace('\n', '')
   } catch (err) {
     console.log('warning: failed to get Mongo credentials from file')
   }
